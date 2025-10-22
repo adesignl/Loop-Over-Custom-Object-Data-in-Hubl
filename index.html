@@ -1,0 +1,19 @@
+{% set array_of_objects = [] %}
+{% set batch_size = 100 %}
+{% set max_calls = 5 %} {# max number of times to call crm_objects is 10 per page #}
+
+{% for i in range(0, max_calls) %}
+  {% set pagination = "&limit=" ~ batch_size ~ "&offset=" ~ i * batch_size %}
+  {% set fqn = "custom_object_fqn" %}
+  {% set query = "query string here" ~ pagination %}
+  {% set fields = "field1,field2,field3" %}
+  {% set format = true/false %}
+  {% set batch = crm_objects( fqn, query, fields, format ) %}
+  {% do array_of_objects.extend(batch.results) %}
+  
+  {% if not batch.has_more %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{{ array_of_objects }}
